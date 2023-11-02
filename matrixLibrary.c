@@ -6,7 +6,7 @@
 #include <semaphore.h>
 
 #include <unistd.h>
-//#include <sys/sysinfo.h>
+#include <sys/sysinfo.h>
 
 sem_t sem;
 int innerProductSum = 0;
@@ -41,9 +41,9 @@ void matrixCopy(int* m1, int* m2, int* n, int* nt) {
     int n2 = (*n)*(*n);
     int perThread = ceil( (double)(n2) / (double)(*nt) );
     int start=0, end=perThread;
+    int nthread = 0;
     pthread_t tid[*nt];
     threadData1 targ[*nt];
-
     // Initiate data for each thread and create
     for (int i=0; i < (*nt); i++) {
         targ[i].m1 = m1;
@@ -56,13 +56,12 @@ void matrixCopy(int* m1, int* m2, int* n, int* nt) {
         start += perThread;
         end += perThread;
         // If more threads than indices, cause loop to break
-        if (start >= n2) {
-            i++;
-            break;
+	if (start >= n2) {
+	    nthread = i+1;
+	    break;
         }
     }
-
-    for (int i=0; i < (*nt); i++) {
+    for (int i=0; i < nthread; i++) {
         pthread_join(tid[i], NULL);
     }
 }
@@ -72,13 +71,13 @@ void* tfunMatrixCopy(void* arg) {
     int j = data->iend;
 
     // if end exceeds # index, assign end to # index
-    if (j > data->n2) {
+    if (j >= data->n2) {
         j = data->n2;
     }
     
     // Assign range of indices to second matrix
     for (int i = data->istart; i < j; i++) {
-        data->m2[i] = data->m1[i];
+	data->m2[i] = data->m1[i];
     }
 
     return(NULL);
@@ -88,6 +87,7 @@ void matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt) {
     int n2 = (*n)*(*n);
     int perThread = ceil( (double)(n2) / (double)(*nt) );
     int start=0, end=perThread;
+    int nthread = 0;
     pthread_t tid[*nt];
     threadData2 targ[*nt];
 
@@ -106,12 +106,12 @@ void matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt) {
         end += perThread;
         // If more threads than indices, cause loop to break
         if (start >= n2) {
-            i++;
-            break;
+            nthread = i+1;
+	    break;
         }
     }
 
-    for (int i=0; i < (*nt); i++) {
+    for (int i=0; i < nthread; i++) {
         pthread_join(tid[i], NULL);
     }
 }
@@ -138,6 +138,7 @@ void* tfunMatrixSaxpy(void* arg) {
 void innerProduct(int* l1, int* v1, int* v2, int* n, int* nt) {
     int perThread = ceil( (double)(*n) / (double)(*nt) );
     int start=0, end=perThread;
+    int nthread = 0;
     innerProductSum = 0;
     pthread_t tid[*nt];
     threadData3 targ[*nt];
@@ -151,21 +152,20 @@ void innerProduct(int* l1, int* v1, int* v2, int* n, int* nt) {
         targ[i].iend = end;
         targ[i].n = *n;
         
-        pthread_create(&tid[i], NULL, tfunMatrixSaxpy, (void*)&targ[i]);
+        pthread_create(&tid[i], NULL, tfunInnerProduct, (void*)&targ[i]);
         start += perThread;
         end += perThread;
 
         // If more threads than indices, cause loop to break
         if (start >= (*n)) {
-            i++;
+            nthread = i+1;
             break;
         }
     }
 
-    for (int i=0; i < (*nt); i++) {
+    for (int i=0; i < nthread; i++) {
         pthread_join(tid[i], NULL);
     }
-    printf("%d\n", innerProductSum);
     *l1 = innerProductSum;
 }
 

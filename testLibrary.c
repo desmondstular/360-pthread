@@ -23,16 +23,16 @@ int main(int argc, char *argv[]) {
 
     generateMatrix(m1, n);
     generateMatrix(m2, n);
-
     matrixCopy(m1, m2, &n, &nt);
-
     matrixSaxpy(m2, m3, &a, &b, &n, &nt);
-
+    printf("Matrix 2\n");
     printMatrix(m2, n);
-    printf("||||\n");
+    printf("\nMatrix 3\n");
     printMatrix(m3, n);
 
-    innerProduct(&sum, m2, m3, &n, &nt);
+    printf("Testing innerproduct\n");
+
+    innerProduct(&sum, m2, m3, &n2, &nt);
 
     printf("\n\nsum = %d\n", sum);
 
