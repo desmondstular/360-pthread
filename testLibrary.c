@@ -30,11 +30,11 @@ int main(int argc, char *argv[]) {
     printf("\nMatrix 3\n");
     printMatrix(m3, n);
 
-    printf("Testing innerproduct\n");
+    printf("\nTesting innerproduct on matrix 2 and 3\n");
 
     innerProduct(&sum, m2, m3, &n2, &nt);
 
-    printf("\n\nsum = %d\n", sum);
+    printf("sum = %d\n", sum);
 
     free(m1);
     free(m2);

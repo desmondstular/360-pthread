@@ -1,15 +1,22 @@
+/*
+* STUDENT: DESMOND STULAR (3067040)
+* CMPT360 FALL 2023
+* LAB 7 - PTHREADS
+*/
+
+
 #include "matrixLibrary.h"
 #include <math.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <semaphore.h>
-
+#include <time.h>
 #include <unistd.h>
 #include <sys/sysinfo.h>
 
-sem_t sem;
-int innerProductSum = 0;
+sem_t sem;				// semaphore
+int innerProductSum;	//used by innerProduct
 
 typedef struct threadData1 {
     int *m1;
@@ -37,8 +44,9 @@ typedef struct threadData3 {
     int n;
 } threadData3;
 
-void matrixCopy(int* m1, int* m2, int* n, int* nt) {
-    int n2 = (*n)*(*n);
+int matrixCopy(int* m1, int* m2, int* n, int* nt) {
+    clock_t startTime = clock();
+	int n2 = (*n)*(*n);
     int perThread = ceil( (double)(n2) / (double)(*nt) );
     int start=0, end=perThread;
     int nthread = 0;
@@ -61,9 +69,14 @@ void matrixCopy(int* m1, int* m2, int* n, int* nt) {
 	    break;
         }
     }
+
     for (int i=0; i < nthread; i++) {
         pthread_join(tid[i], NULL);
     }
+	
+	clock_t endTime = clock();
+	int timeTook = (double)(endTime - startTime) / CLOCKS_PER_SEC * pow(10, 6);
+	return timeTook;
 }
 
 void* tfunMatrixCopy(void* arg) {
@@ -83,8 +96,9 @@ void* tfunMatrixCopy(void* arg) {
     return(NULL);
 }
 
-void matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt) {
-    int n2 = (*n)*(*n);
+int matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt) {
+    clock_t startTime = clock();
+	int n2 = (*n)*(*n);
     int perThread = ceil( (double)(n2) / (double)(*nt) );
     int start=0, end=perThread;
     int nthread = 0;
@@ -114,6 +128,10 @@ void matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt) {
     for (int i=0; i < nthread; i++) {
         pthread_join(tid[i], NULL);
     }
+
+	clock_t endTime = clock();
+	int timeTook = (double)(endTime - startTime) / CLOCKS_PER_SEC * pow(10, 6);
+	return timeTook;
 }
 
 void* tfunMatrixSaxpy(void* arg) {
@@ -135,8 +153,9 @@ void* tfunMatrixSaxpy(void* arg) {
     return(NULL);
 }
 
-void innerProduct(int* l1, int* v1, int* v2, int* n, int* nt) {
-    int perThread = ceil( (double)(*n) / (double)(*nt) );
+int innerProduct(int* l1, int* v1, int* v2, int* n, int* nt) {
+    clock_t startTime = clock();
+	int perThread = ceil( (double)(*n) / (double)(*nt) );
     int start=0, end=perThread;
     int nthread = 0;
     innerProductSum = 0;
@@ -167,6 +186,10 @@ void innerProduct(int* l1, int* v1, int* v2, int* n, int* nt) {
         pthread_join(tid[i], NULL);
     }
     *l1 = innerProductSum;
+
+	clock_t endTime = clock();
+	double timeTook = (double)(endTime - startTime) / CLOCKS_PER_SEC * pow(10, 6);
+	return timeTook;
 }
 
 void* tfunInnerProduct(void* arg) {
@@ -204,7 +227,7 @@ void printMatrix(int *matrix, int n) {
         } else if (i != 0) {
             printf(" ");
         }
-        printf("%2d", matrix[i]);
+        printf("%03d", matrix[i]);
     }
     printf("\n");
 }

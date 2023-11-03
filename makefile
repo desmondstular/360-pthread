@@ -1,8 +1,9 @@
 CC = gcc
-CFLAGS = -g -Wall -std=c11
+CFLAGS = -Wall -std=c11
+LFLAGS = -lm -pthread
 
 testLibrary: testLibrary.o
-	$(CC) $(CFLAGS) testLibrary.c matrixLibrary.c -o testLibrary -lm
+	$(CC) $(CFLAGS) testLibrary.c matrixLibrary.c -o test $(LFLAGS)
 
 clean:
 	rm testLibrary

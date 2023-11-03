@@ -1,16 +1,22 @@
+/*
+* STUDENT: DESMOND STULAR
+* CMPT360 FALL 2023
+* LAB7 - THREADS
+*/
+
 
 #ifndef MATRIXLIBRARY_H_
 #define MATRIXLIBRARY_H_
 
-void matrixCopy(int* m1, int* m2, int* n, int* nt);
+int matrixCopy(int* m1, int* m2, int* n, int* nt);
 
 void* tfunMatrixCopy(void* arg);
 
-void matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt);
+int matrixSaxpy(int* m1, int* m2, int* a, int* b, int* n, int* nt);
 
 void* tfunMatrixSaxpy(void* arg);
 
-void innerProduct(int* l1, int* v1, int* v2, int* n, int* nt);
+int innerProduct(int* l1, int* v1, int* v2, int* n, int* nt);
 
 void* tfunInnerProduct(void* arg);
 
